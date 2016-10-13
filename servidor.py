@@ -8,7 +8,7 @@ class servidorInterfaz(QtGui.QDialog):
 		QtGui.QDialog.__init__(self)
 		self.timer = QtCore.QTimer()
 		self.direccion = "R"
-		self.snake = [(0,5),(0,4),(0,3),(0,2),(0,1),(0,0)]
+		self.snake = [[0,5],[0,4],[0,3],[0,2],[0,1],[0,0]]
 		self.items = []
 		self.timer.timeout.connect(lambda: self.updateTable())
 		self.timer.start(250)
@@ -39,69 +39,78 @@ class servidorInterfaz(QtGui.QDialog):
 
 	def updateTable(self):
 		if (self.ui.iniciar_juego.isChecked()):
-			# aqui va la actualizacion de la tabla
+			#aqui va la actualizacion de la tabla
 			if (self.direccion=="U"):
-				(x,y) = self.snake[0]
-				(a,b) = self.snake[-1]
-				c = (x + 1)% self.ui.spin_filas.value()
-				self.snake.insert(0,(c,y))
-				i = self.ui.tableWidget.itemAt(a,b)
-				self.ui.tableWidget.setItemSelected(i, False)
-				j = self.ui.tableWidget.itemAt(c,y)
-				self.ui.tableWidget.setItemSelected(j, True)
+				x = self.snake[0]
+				a = self.snake[-1]
+				c = (x[0] - 1)% self.ui.spin_filas.value()
+				self.snake.insert(0,[c,x[1]])
+				#i = self.ui.tableWidget.itemAt(a[0],a[1])
+				self.ui.tableWidget.item(a[0],a[1]).setBackground(QtGui.QColor(250,250,250))
+				#self.ui.tableWidget.setItemSelected(i, False)
+				#j = self.ui.tableWidget.itemAt(c,y)
+				self.ui.tableWidget.item(c,x[1]).setBackground(QtGui.QColor(100,100,150))
+				#self.ui.tableWidget.setItemSelected(j, True)
 				del self.snake[-1]
 			elif (self.direccion=="D"):
-				(x,y) = self.snake[0]
-				(a,b) = self.snake[-1]
-				c = (x - 1)% self.ui.spin_filas.value()
-				self.snake.insert(0,(c,y))
-				i = self.ui.tableWidget.itemAt(a,b)
-				self.ui.tableWidget.setItemSelected(i, False)
-				j = self.ui.tableWidget.itemAt(c,y)
-				self.ui.tableWidget.setItemSelected(j, True)
+				x = self.snake[0]
+				a = self.snake[-1]
+				c = (x[0] + 1)% self.ui.spin_filas.value()
+				self.snake.insert(0,[c,x[1]])
+				#i = self.ui.tableWidget.itemAt(a[0],a[1])
+				self.ui.tableWidget.item(a[0],a[1]).setBackground(QtGui.QColor(250,250,250))
+				#self.ui.tableWidget.setItemSelected(i, False)
+				#j = self.ui.tableWidget.itemAt(c,y)
+				self.ui.tableWidget.item(c,x[1]).setBackground(QtGui.QColor(100,100,150))
+				#self.ui.tableWidget.setItemSelected(j, True)
 				del self.snake[-1]
 			elif (self.direccion=="R"):
-				(x,y) = self.snake[0]
-				(a,b) = self.snake[-1]
-				c = (y + 1)% self.ui.spin_colum.value()
-				self.snake.insert(0,(x,c))
-				i = self.ui.tableWidget.itemAt(a,b)
-				self.ui.tableWidget.setItemSelected(i, False)
-				j = self.ui.tableWidget.itemAt(x,c)
-				self.ui.tableWidget.setItemSelected(j, True)
+				x = self.snake[0]
+				a = self.snake[-1]
+				c = (x[1] + 1)% self.ui.spin_colum.value()
+				print c
+				self.snake.insert(0,[x[0], c])
+				#i = self.ui.tableWidget.itemAt(a[0],a[1])
+				self.ui.tableWidget.item(a[0],a[1]).setBackground(QtGui.QColor(250,250,250))
+				#self.ui.tableWidget.setItemSelected(i, False)
+				#j = self.ui.tableWidget.itemAt(c,x[1])
+				self.ui.tableWidget.item(x[0], c).setBackground(QtGui.QColor(100,100,150))
+				#self.ui.tableWidget.setItemSelected(j, True
 				del self.snake[-1]
 			elif (self.direccion=="L"):
-				(x,y) = self.snake[0]
-				(a,b) = self.snake[-1]
-				c = (y - 1)% self.ui.spin_colum.value()
-				self.snake.insert(0,(x,c))
-				i = self.ui.tableWidget.itemAt(a,b)
-				self.ui.tableWidget.setItemSelected(i, False)
-				j = self.ui.tableWidget.itemAt(x,c)
-				self.ui.tableWidget.setItemSelected(j, True)
+				x = self.snake[0]
+				a = self.snake[-1]
+				c = (x[1] - 1)% self.ui.spin_colum.value()
+				self.snake.insert(0,[x[0],c])
+				#i = self.ui.tableWidget.itemAt(a[0],a[1])
+				self.ui.tableWidget.item(a[0],a[1]).setBackground(QtGui.QColor(250,250,250))
+				#self.ui.tableWidget.setItemSelected(i, False)
+				#j = self.ui.tableWidget.itemAt(c,y)
+				self.ui.tableWidget.item(x[0],c).setBackground(QtGui.QColor(100,100,150))
+				#self.ui.tableWidget.setItemSelected(j, True)
 				del self.snake[-1]
 			# colorear serpiente
 			if (self.snake[0] in self.snake[1:]):
+				QtGui.QMessageBox.about(self, "Info",  """Juego Terminado: \nPerdiste""")
 				self.ter_juego()
 			print self.snake
 
 	def ini_juego(self):
 		if (self.ui.iniciar_juego.isChecked()):
-			for x in range(len(self.snake)):
-				(a,b) = self.snake[x]
-				for x in range(self.ui.spin_filas.value()):
-					for y in range(self.ui.spin_colum.value()):
-						self.ui.tableWidget.setItem(a, b, QtGui.QTableWidgetItem("", 0))
-						self.ui.tableWidget.item(a,b).setBackground(QtGui.QColor(100,100,150))
+			for x in range(self.ui.spin_filas.value()):
+				for y in range(self.ui.spin_colum.value()):
+					self.ui.tableWidget.setItem(x, y, QtGui.QTableWidgetItem("", 0))
 			self.ui.iniciar_juego.setText("Pausar Juego")
 			self.ui.terminar_juego.setVisible(True)
 			for x in range(len(self.snake)):
-				(a,b) = self.snake[x]
-				i = self.ui.tableWidget.itemAt(a,b)
-				self.ui.tableWidget.setItemSelected(i, True)
+				a = self.snake[x]
+				i = self.ui.tableWidget.itemAt(a[0],a[1])
+				self.ui.tableWidget.item(a[0],a[1]).setBackground(QtGui.QColor(100,100,150))
+				#self.ui.tableWidget.setItemSelected(i, True)
 			#aqui va la inicializacion de snake
 		else:
 			self.ui.iniciar_juego.setText("Iniciar Juego")
+
 
 	def ter_juego(self):
 		if (self.ui.iniciar_juego.isChecked()):
@@ -117,16 +126,20 @@ class servidorInterfaz(QtGui.QDialog):
 	def keyPressEventTable(self, event):
 		key = event.key()
 		if key == QtCore.Qt.Key_Left:
-			self.direccion = "L"
+			if (self.direccion != "R"):
+				self.direccion = "L"
 			print('Left Arrow Pressed')
 		elif key == QtCore.Qt.Key_Up:
-			self.direccion = "U"
+			if (self.direccion != "D"):
+				self.direccion = "U"
 			print('Up Arrow Pressed')
 		elif key == QtCore.Qt.Key_Right:
-			self.direccion = "R"
+			if (self.direccion != "L"):
+				self.direccion = "R"
 			print('Right Arrow Pressed')
 		elif key == QtCore.Qt.Key_Down:
-			self.direccion = "D"
+			if (self.direccion != "U"):
+				self.direccion = "D"
 			print('Down Arrow Pressed')
 
 app = QtGui.QApplication(sys.argv)
