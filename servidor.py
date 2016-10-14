@@ -8,8 +8,7 @@ class servidorInterfaz(QtGui.QDialog):
 		QtGui.QDialog.__init__(self)
 		self.timer = QtCore.QTimer()
 		self.direccion = "R"
-		self.snake = [[0,5],[0,4],[0,3],[0,2],[0,1],[0,0]]
-		self.items = []
+		self.snake = []
 		self.timer.timeout.connect(lambda: self.updateTable())
 		self.timer.start(250)
 		# Set up the user interface from Designer.
@@ -30,10 +29,12 @@ class servidorInterfaz(QtGui.QDialog):
 		self.ui.terminar_juego.clicked.connect(lambda: self.ter_juego())
 		self.ui.show()
 
+	#cambia el tamano de las filas y renglones para ajustarlos al tamano
 	def resizeTable(self):
 		self.ui.tableWidget.setRowCount(self.ui.spin_filas.value())
 		self.ui.tableWidget.setColumnCount(self.ui.spin_colum.value())
 
+	#modifica el tiempo que tarda en actualizarce el juego en ms
 	def esperaAct(self):
 		self.timer.start(self.ui.spin_espera.value())
 
@@ -45,58 +46,44 @@ class servidorInterfaz(QtGui.QDialog):
 				a = self.snake[-1]
 				c = (x[0] - 1)% self.ui.spin_filas.value()
 				self.snake.insert(0,[c,x[1]])
-				#i = self.ui.tableWidget.itemAt(a[0],a[1])
 				self.ui.tableWidget.item(a[0],a[1]).setBackground(QtGui.QColor(250,250,250))
-				#self.ui.tableWidget.setItemSelected(i, False)
-				#j = self.ui.tableWidget.itemAt(c,y)
 				self.ui.tableWidget.item(c,x[1]).setBackground(QtGui.QColor(100,100,150))
-				#self.ui.tableWidget.setItemSelected(j, True)
 				del self.snake[-1]
 			elif (self.direccion=="D"):
 				x = self.snake[0]
 				a = self.snake[-1]
 				c = (x[0] + 1)% self.ui.spin_filas.value()
 				self.snake.insert(0,[c,x[1]])
-				#i = self.ui.tableWidget.itemAt(a[0],a[1])
 				self.ui.tableWidget.item(a[0],a[1]).setBackground(QtGui.QColor(250,250,250))
-				#self.ui.tableWidget.setItemSelected(i, False)
-				#j = self.ui.tableWidget.itemAt(c,y)
 				self.ui.tableWidget.item(c,x[1]).setBackground(QtGui.QColor(100,100,150))
-				#self.ui.tableWidget.setItemSelected(j, True)
 				del self.snake[-1]
 			elif (self.direccion=="R"):
 				x = self.snake[0]
 				a = self.snake[-1]
 				c = (x[1] + 1)% self.ui.spin_colum.value()
-				print c
 				self.snake.insert(0,[x[0], c])
-				#i = self.ui.tableWidget.itemAt(a[0],a[1])
 				self.ui.tableWidget.item(a[0],a[1]).setBackground(QtGui.QColor(250,250,250))
-				#self.ui.tableWidget.setItemSelected(i, False)
-				#j = self.ui.tableWidget.itemAt(c,x[1])
 				self.ui.tableWidget.item(x[0], c).setBackground(QtGui.QColor(100,100,150))
-				#self.ui.tableWidget.setItemSelected(j, True
 				del self.snake[-1]
 			elif (self.direccion=="L"):
 				x = self.snake[0]
 				a = self.snake[-1]
 				c = (x[1] - 1)% self.ui.spin_colum.value()
 				self.snake.insert(0,[x[0],c])
-				#i = self.ui.tableWidget.itemAt(a[0],a[1])
 				self.ui.tableWidget.item(a[0],a[1]).setBackground(QtGui.QColor(250,250,250))
-				#self.ui.tableWidget.setItemSelected(i, False)
-				#j = self.ui.tableWidget.itemAt(c,y)
 				self.ui.tableWidget.item(x[0],c).setBackground(QtGui.QColor(100,100,150))
-				#self.ui.tableWidget.setItemSelected(j, True)
 				del self.snake[-1]
-			# colorear serpiente
+			# Mensaje de que se ha perdido
 			if (self.snake[0] in self.snake[1:]):
 				QtGui.QMessageBox.about(self, "Info",  """Juego Terminado: \nPerdiste""")
 				self.ter_juego()
 			print self.snake
 
 	def ini_juego(self):
+		#aqui va la inicializacion de snake
 		if (self.ui.iniciar_juego.isChecked()):
+			self.snake = [[0,5],[0,4],[0,3],[0,2],[0,1],[0,0]]
+			self.direccion = "R"
 			for x in range(self.ui.spin_filas.value()):
 				for y in range(self.ui.spin_colum.value()):
 					self.ui.tableWidget.setItem(x, y, QtGui.QTableWidgetItem("", 0))
@@ -106,13 +93,12 @@ class servidorInterfaz(QtGui.QDialog):
 				a = self.snake[x]
 				i = self.ui.tableWidget.itemAt(a[0],a[1])
 				self.ui.tableWidget.item(a[0],a[1]).setBackground(QtGui.QColor(100,100,150))
-				#self.ui.tableWidget.setItemSelected(i, True)
-			#aqui va la inicializacion de snake
 		else:
 			self.ui.iniciar_juego.setText("Iniciar Juego")
 
 
 	def ter_juego(self):
+		#aqui va el reinicio de la tabla del juego
 		if (self.ui.iniciar_juego.isChecked()):
 			self.ui.tableWidget.clear()
 			self.ui.terminar_juego.setVisible(False)
@@ -120,9 +106,10 @@ class servidorInterfaz(QtGui.QDialog):
 			self.ui.iniciar_juego.setCheckable(True)
 			self.ui.iniciar_juego.setText("Iniciar Juego")
 		self.ui.terminar_juego.setVisible(False)
-		#aqui va el reinicio de la tabla del juego
 
 
+
+	#enventos de presionar una tecla
 	def keyPressEventTable(self, event):
 		key = event.key()
 		if key == QtCore.Qt.Key_Left:
